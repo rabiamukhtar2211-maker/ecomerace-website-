@@ -1,0 +1,157 @@
+@import "tailwindcss" source(none);
+@source "../src";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * LUMIÈRE AURA design system — luxury perfume & skincare.
+ * Palette: deep aubergine / royal purple + rose pink + champagne gold.
+ * All colors in oklch. Never hardcode colors in components.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-gold: var(--gold);
+  --color-rose: var(--rose);
+  --color-plum: var(--plum);
+  --color-ink: var(--ink);
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Karla", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --radius: 0.5rem;
+  --background: oklch(0.985 0.008 330);
+  --foreground: oklch(0.21 0.06 310);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.06 310);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.06 310);
+  --primary: oklch(0.42 0.16 305);
+  --primary-foreground: oklch(0.985 0.01 330);
+  --secondary: oklch(0.94 0.03 330);
+  --secondary-foreground: oklch(0.32 0.11 310);
+  --muted: oklch(0.955 0.015 320);
+  --muted-foreground: oklch(0.52 0.05 315);
+  --accent: oklch(0.72 0.17 350);
+  --accent-foreground: oklch(0.99 0.01 330);
+  --destructive: oklch(0.58 0.22 20);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.9 0.03 320);
+  --input: oklch(0.9 0.03 320);
+  --ring: oklch(0.55 0.16 320);
+  --gold: oklch(0.82 0.11 88);
+  --rose: oklch(0.75 0.15 355);
+  --plum: oklch(0.28 0.1 310);
+  --ink: oklch(0.16 0.05 305);
+
+  --gradient-royal: linear-gradient(135deg, oklch(0.24 0.1 305), oklch(0.42 0.17 315) 55%, oklch(0.66 0.18 352));
+  --gradient-rose: linear-gradient(120deg, oklch(0.78 0.13 350), oklch(0.62 0.17 320));
+  --gradient-veil: linear-gradient(180deg, oklch(0.16 0.05 305 / 0.05), oklch(0.16 0.05 305 / 0.75));
+  --shadow-soft: 0 18px 50px -24px oklch(0.28 0.1 310 / 0.45);
+  --shadow-glow: 0 0 0 1px oklch(0.82 0.11 88 / 0.35), 0 24px 60px -30px oklch(0.42 0.17 315 / 0.7);
+}
+
+.dark {
+  --background: oklch(0.16 0.045 305);
+  --foreground: oklch(0.96 0.01 330);
+  --card: oklch(0.21 0.055 308);
+  --card-foreground: oklch(0.96 0.01 330);
+  --popover: oklch(0.21 0.055 308);
+  --popover-foreground: oklch(0.96 0.01 330);
+  --primary: oklch(0.72 0.16 330);
+  --primary-foreground: oklch(0.16 0.05 305);
+  --secondary: oklch(0.27 0.07 308);
+  --secondary-foreground: oklch(0.96 0.01 330);
+  --muted: oklch(0.26 0.06 308);
+  --muted-foreground: oklch(0.75 0.04 320);
+  --accent: oklch(0.75 0.16 352);
+  --accent-foreground: oklch(0.16 0.05 305);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.72 0.16 330);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+}
+
+@utility bg-royal {
+  background-image: var(--gradient-royal);
+}
+
+@utility bg-rose-grad {
+  background-image: var(--gradient-rose);
+}
+
+@utility bg-veil {
+  background-image: var(--gradient-veil);
+}
+
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+@utility shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+@utility text-gradient {
+  background-image: var(--gradient-rose);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+@utility card-lux {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+}
