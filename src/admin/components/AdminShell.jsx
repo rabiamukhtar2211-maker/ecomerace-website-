@@ -11,8 +11,11 @@ import {
   Bell,
   Menu,
   X,
+  Mail,
+  Store
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import api from "@/shared/services/api";
 
 import sidebar from "@/shared/assets/sidebar.png";
 
@@ -21,6 +24,8 @@ const links = [
   { to: "/admin/products", label: "Products", icon: Boxes },
   { to: "/admin/orders", label: "Orders", icon: Package },
   { to: "/admin/customers", label: "Customers", icon: Users },
+  { to: "/admin/sellers", label: "Sellers & Artisans", icon: Store, hasBadge: true },
+  { to: "/admin/messages", label: "Messages", icon: Mail },
   { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
@@ -34,12 +39,23 @@ function AdminShell() {
 
   const [ready, setReady] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [pendingSellersCount, setPendingSellersCount] = useState(0);
 
   useEffect(() => {
-    if (localStorage.getItem("aura_admin") !== "1") {
+    const isAdmin = localStorage.getItem("aura_admin") === "1";
+
+    if (!isAdmin) {
       navigate({ to: "/admin-login" });
     } else {
       setReady(true);
+      // Fetch pending sellers badge
+      api.getDashboardStats()
+        .then((res) => {
+          if (res.kpis && res.kpis.pendingSellers) {
+            setPendingSellersCount(parseInt(res.kpis.pendingSellers, 10));
+          }
+        })
+        .catch(() => {});
     }
   }, [navigate, pathname]);
 
@@ -95,14 +111,21 @@ function AdminShell() {
                 <Link
                   key={l.to}
                   to={l.to}
-                  className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-all ${
+                  className={`flex items-center justify-between rounded-md px-3 py-2.5 text-sm transition-all ${
                     active
-                      ? "bg-[#C44991]/35 text-white shadow-sm"
+                      ? "bg-[#C44991]/35 text-white shadow-sm font-semibold"
                       : "text-white/75 hover:bg-white/10 hover:text-white"
                   }`}
                 >
-                  <l.icon className="size-4" />
-                  {l.label}
+                  <div className="flex items-center gap-3">
+                    <l.icon className="size-4" />
+                    {l.label}
+                  </div>
+                  {l.hasBadge && pendingSellersCount > 0 && (
+                    <span className="flex size-5 items-center justify-center rounded-full bg-[#F6C76B] text-[0.65rem] font-bold text-[#24102F]">
+                      {pendingSellersCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -111,7 +134,7 @@ function AdminShell() {
           {/* Logout */}
           <button
             onClick={handleLogout}
-            className="mt-auto flex items-center gap-3 rounded-md px-3 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/10 hover:text-white"
+            className="mt-auto flex items-center gap-3 rounded-md px-3 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
           >
             <LogOut className="size-4" />
             Sign out
@@ -119,19 +142,16 @@ function AdminShell() {
         </div>
       </aside>
 
-
       {/* =====================================================
           MOBILE SIDEBAR
       ===================================================== */}
       {mobileOpen && (
         <>
-          {/* Background overlay */}
           <div
             className="fixed inset-0 z-40 bg-black/40 lg:hidden"
             onClick={() => setMobileOpen(false)}
           />
 
-          {/* Mobile sidebar */}
           <aside
             className="fixed left-0 top-0 z-50 h-screen w-72 overflow-hidden lg:hidden"
             style={{
@@ -140,12 +160,9 @@ function AdminShell() {
               backgroundPosition: "center",
             }}
           >
-            {/* Overlay */}
             <div className="absolute inset-0 bg-[#24102F]/85" />
 
             <div className="relative z-10 flex h-full flex-col p-5 text-white">
-
-              {/* Close button */}
               <div className="mb-8 flex items-start justify-between">
                 <div>
                   <p className="font-display text-xl tracking-[0.18em]">
@@ -165,7 +182,6 @@ function AdminShell() {
                 </button>
               </div>
 
-              {/* Mobile navigation */}
               <nav className="grid gap-1">
                 {links.map((l) => {
                   const active =
@@ -178,20 +194,26 @@ function AdminShell() {
                       key={l.to}
                       to={l.to}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 rounded-md px-3 py-3 text-sm transition-all ${
+                      className={`flex items-center justify-between rounded-md px-3 py-3 text-sm transition-all ${
                         active
-                          ? "bg-[#C44991]/35 text-white"
+                          ? "bg-[#C44991]/35 text-white font-semibold"
                           : "text-white/75 hover:bg-white/10 hover:text-white"
                       }`}
                     >
-                      <l.icon className="size-4" />
-                      {l.label}
+                      <div className="flex items-center gap-3">
+                        <l.icon className="size-4" />
+                        {l.label}
+                      </div>
+                      {l.hasBadge && pendingSellersCount > 0 && (
+                        <span className="flex size-5 items-center justify-center rounded-full bg-[#F6C76B] text-[0.65rem] font-bold text-[#24102F]">
+                          {pendingSellersCount}
+                        </span>
+                      )}
                     </Link>
                   );
                 })}
               </nav>
 
-              {/* Mobile logout */}
               <button
                 onClick={handleLogout}
                 className="mt-auto flex items-center gap-3 rounded-md px-3 py-3 text-sm text-white/75 hover:bg-white/10 hover:text-white"
@@ -204,16 +226,12 @@ function AdminShell() {
         </>
       )}
 
-
       {/* =====================================================
           MAIN AREA
       ===================================================== */}
       <div className="min-h-screen lg:ml-64">
-
         {/* Header */}
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-[#E9D8EA] bg-white/95 px-4 backdrop-blur-md sm:px-5">
-
-          {/* Hamburger - Mobile/Tablet */}
           <button
             onClick={() => setMobileOpen(true)}
             className="rounded-md p-2 text-[#5D3A6E] hover:bg-[#F5E8F5] lg:hidden"
@@ -221,49 +239,40 @@ function AdminShell() {
             <Menu className="size-5" />
           </button>
 
-          {/* Search */}
           <div className="flex min-w-0 flex-1 items-center gap-2 rounded-md bg-[#F7E8F6] px-3 py-2">
             <Search className="size-4 shrink-0 text-[#8A6A91]" />
-
             <input
-              placeholder="Search orders, products, customers…"
+              placeholder="Search orders, products, customers, sellers…"
               className="w-full bg-transparent text-sm outline-none placeholder:text-[#9A7FA0]"
             />
           </div>
 
-          {/* Notification */}
-          <button className="shrink-0 rounded-md p-2 hover:bg-[#F7E8F6]">
+          <button
+            onClick={() => navigate({ to: "/admin/sellers" })}
+            className="relative shrink-0 rounded-md p-2 hover:bg-[#F7E8F6]"
+            title="Pending Seller Requests"
+          >
             <Bell className="size-5 text-[#6B4A78]" />
+            {pendingSellersCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-accent" />
+            )}
           </button>
 
-          {/* Admin */}
           <div className="flex shrink-0 items-center gap-3">
-
-            <div className="grid size-9 place-items-center rounded-full bg-[#7B247F] text-xs text-white">
+            <div className="grid size-9 place-items-center rounded-full bg-[#7B247F] text-xs text-white font-semibold">
               AM
             </div>
-
             <div className="hidden text-xs leading-tight xl:block">
-              <p className="font-semibold text-[#35104F]">
-                Admin Manager
-              </p>
-
-              <p className="text-[#8A6A91]">
-                admin@lumiere.com
-              </p>
+              <p className="font-semibold text-[#35104F]">Admin Manager</p>
+              <p className="text-[#8A6A91]">admin@lumiere.com</p>
             </div>
-
           </div>
         </header>
 
-
-        {/* =====================================================
-            PAGE CONTENT
-        ===================================================== */}
+        {/* Page Content */}
         <main className="min-w-0 p-5 lg:p-8">
           <Outlet />
         </main>
-
       </div>
     </div>
   );

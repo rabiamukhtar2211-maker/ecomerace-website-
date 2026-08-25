@@ -1,27 +1,94 @@
 import { Link, useParams } from "@/shared/lib/router";
-import { Heart, Minus, Plus, Shield, Star, Truck, Undo2 } from "lucide-react";
-import { useState } from "react";
+import { Heart, Minus, Plus, Shield, Star, Truck, Undo2, Loader2, Store, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import SiteLayout from "@/user/components/SiteLayout";
 import ProductCard from "@/user/components/ProductCard";
-import { getProduct, money, products } from "@/shared/lib/products";
+import { getProduct as getLocalProduct, money, products as localProducts } from "@/shared/lib/products";
 import { useCart } from "@/shared/lib/cart";
+import api from "@/shared/services/api";
+
 function ProductPage() {
   const { id } = useParams();
-  const product = getProduct(id);
+  const [product, setProduct] = useState(() => getLocalProduct(id));
+  const [loading, setLoading] = useState(!product);
   const { add, wishlist, toggleWish } = useCart();
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState("details");
-  if (!product) {
-    return <SiteLayout>
-        <div className="mx-auto max-w-3xl px-5 py-24 text-center">
-          <h1 className="text-3xl">Product not found</h1>
-          <Link to="/shop" className="mt-6 inline-block text-accent">Back to shop</Link>
+
+  useEffect(() => {
+    async function loadProduct() {
+      const local = getLocalProduct(id);
+      if (local) {
+        setProduct(local);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const res = await api.getProductById(id);
+        if (res.product) {
+          const p = res.product;
+          setProduct({
+            id: p.slug || String(p.id),
+            dbId: p.id,
+            name: p.name,
+            tagline: p.tagline,
+            description: p.description,
+            price: Number(p.price),
+            oldPrice: p.old_price ? Number(p.old_price) : undefined,
+            category: p.category,
+            family: p.family || "Luxury",
+            size: p.size || "100 ml",
+            rating: Number(p.rating || 5.0),
+            reviews: p.reviews || 0,
+            stock: p.stock || 20,
+            image: p.image || "/p-perfume-1.jpg",
+            badge: p.badge,
+            store_name: p.store_name || "Lumière Atelier",
+            seller_name: p.seller_name,
+            notes: Array.isArray(p.notes) ? p.notes : ["Signature Accord", "Luxury Essence"],
+          });
+        }
+      } catch (err) {
+        console.warn("Could not fetch product:", err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProduct();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <SiteLayout>
+        <div className="mx-auto max-w-3xl px-5 py-32 text-center">
+          <Loader2 className="mx-auto size-8 animate-spin text-accent mb-3" />
+          <p className="text-sm text-muted-foreground">Loading bespoke luxury product...</p>
         </div>
-      </SiteLayout>;
+      </SiteLayout>
+    );
   }
-  const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
-  return <SiteLayout>
+
+  if (!product) {
+    return (
+      <SiteLayout>
+        <div className="mx-auto max-w-3xl px-5 py-24 text-center">
+          <h1 className="text-3xl font-display">Product not found</h1>
+          <p className="mt-2 text-sm text-muted-foreground">This product may have been archived or removed.</p>
+          <Link to="/shop" className="mt-6 inline-block text-accent font-semibold underline">
+            Back to shop
+          </Link>
+        </div>
+      </SiteLayout>
+    );
+  }
+
+  const related = localProducts.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
+
+  return (
+    <SiteLayout>
       <div className="mx-auto max-w-7xl px-5 py-10">
         <nav className="text-xs text-muted-foreground">
           <Link to="/">Home</Link> / <Link to="/shop">Shop</Link> / <span className="text-foreground">{product.name}</span>
@@ -29,110 +96,191 @@ function ProductPage() {
 
         <div className="mt-8 grid gap-12 lg:grid-cols-2">
           <div className="grid gap-4">
-            <img src={product.image} alt={product.name} width={900} height={1100} className="w-full rounded-lg object-cover shadow-soft" />
+            <img
+              src={product.image || "/p-perfume-1.jpg"}
+              alt={product.name}
+              width={900}
+              height={1100}
+              onError={(e) => {
+                e.target.src = "/p-perfume-1.jpg";
+              }}
+              className="w-full rounded-2xl object-cover shadow-soft aspect-4/5 bg-muted"
+            />
             <div className="grid grid-cols-3 gap-4">
-              {[product.image, product.image, product.image].map((src, i) => <img key={i} src={src} alt={`${product.name} view ${i + 1}`} loading="lazy" className="aspect-square w-full rounded-md object-cover opacity-80" />)}
+              {[product.image, product.image, product.image].map((src, i) => (
+                <img
+                  key={i}
+                  src={src || "/p-perfume-1.jpg"}
+                  alt={`${product.name} view ${i + 1}`}
+                  loading="lazy"
+                  onError={(e) => {
+                    e.target.src = "/p-perfume-1.jpg";
+                  }}
+                  className="aspect-square w-full rounded-xl object-cover opacity-80 border border-border"
+                />
+              ))}
             </div>
           </div>
 
           <div>
-            <p className="eyebrow text-accent">{product.category} · {product.family}</p>
-            <h1 className="mt-3 text-4xl md:text-5xl">{product.name}</h1>
+            <div className="flex items-center justify-between">
+              <p className="eyebrow text-accent">{product.category} · {product.family}</p>
+              {product.stock < 10 && (
+                <span className="text-xs text-destructive font-semibold">Only {product.stock} left in stock</span>
+              )}
+            </div>
+
+            <h1 className="mt-3 font-display text-4xl md:text-5xl">{product.name}</h1>
             <p className="mt-2 text-muted-foreground">{product.tagline}</p>
+
+            {/* Seller / Store Identity Card (Daraz / Amazon Style) */}
+            <div className="mt-4 flex items-center justify-between rounded-xl border border-border/80 bg-muted/40 p-3 text-xs">
+              <div className="flex items-center gap-2.5">
+                <div className="grid size-8 place-items-center rounded-lg bg-royal text-primary-foreground font-semibold">
+                  <Store className="size-4" />
+                </div>
+                <div>
+                  <p className="text-[0.65rem] uppercase tracking-wider text-muted-foreground">Sold & Dispatched by</p>
+                  <p className="font-semibold text-foreground text-sm leading-tight">
+                    {product.store_name || "Lumière Aura Official"}
+                  </p>
+                </div>
+              </div>
+              <span className="flex items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 text-[0.68rem] font-semibold text-accent border border-accent/30">
+                <Sparkles className="size-3" /> Verified Artisan
+              </span>
+            </div>
 
             <div className="mt-4 flex items-center gap-3 text-sm">
               <span className="flex gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => <Star key={i} className={`size-4 ${i < Math.round(product.rating) ? "fill-gold text-gold" : "text-muted"}`} />)}
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className={`size-4 ${i < Math.round(product.rating) ? "fill-gold text-gold" : "text-muted"}`} />
+                ))}
               </span>
               <span className="text-muted-foreground">{product.rating} · {product.reviews} reviews</span>
             </div>
 
             <div className="mt-6 flex items-baseline gap-3">
-              <span className="text-3xl font-semibold">{money(product.price)}</span>
-              {product.oldPrice && <span className="text-muted-foreground line-through">{money(product.oldPrice)}</span>}
+              <span className="text-3xl font-semibold text-foreground">{money(product.price)}</span>
+              {product.oldPrice && (
+                <span className="text-muted-foreground line-through">{money(product.oldPrice)}</span>
+              )}
               <span className="text-xs text-muted-foreground">/ {product.size}</span>
             </div>
 
-            <p className="mt-6 text-sm text-muted-foreground">{product.description}</p>
+            <p className="mt-6 text-sm text-muted-foreground leading-relaxed">{product.description}</p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <div className="flex items-center rounded-md border border-input">
-                <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-3" aria-label="Decrease">
+              <div className="flex items-center rounded-xl border border-input bg-card">
+                <button
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  className="px-3.5 py-3 text-muted-foreground hover:text-foreground cursor-pointer"
+                  aria-label="Decrease"
+                >
                   <Minus className="size-4" />
                 </button>
-                <span className="w-10 text-center text-sm">{qty}</span>
-                <button onClick={() => setQty((q) => q + 1)} className="px-3 py-3" aria-label="Increase">
+                <span className="w-10 text-center text-sm font-semibold">{qty}</span>
+                <button
+                  onClick={() => setQty((q) => q + 1)}
+                  className="px-3.5 py-3 text-muted-foreground hover:text-foreground cursor-pointer"
+                  aria-label="Increase"
+                >
                   <Plus className="size-4" />
                 </button>
               </div>
+
               <button
-    onClick={() => {
-      add(product.id, qty);
-      toast.success(`${product.name} \xD7 ${qty} added to bag`);
-    }}
-    className="flex-1 rounded-md bg-royal px-8 py-4 text-[0.72rem] tracking-[0.2em] text-primary-foreground uppercase shadow-glow"
-  >
-                Add to bag — {money(product.price * qty)}
+                onClick={() => {
+                  for (let i = 0; i < qty; i++) add(product);
+                  toast.success(`Added ${qty} × ${product.name} to bag`);
+                }}
+                className="flex-1 rounded-xl bg-royal py-3.5 text-xs tracking-[0.2em] uppercase text-primary-foreground font-semibold shadow-glow hover:opacity-90 transition-all cursor-pointer"
+              >
+                Add to bag · {money(product.price * qty)}
               </button>
+
               <button
-    onClick={() => toggleWish(product.id)}
-    aria-label="Wishlist"
-    className="grid size-13 place-items-center rounded-md border border-input"
-  >
+                onClick={() => {
+                  toggleWish(product.id);
+                  toast.success(wishlist.includes(product.id) ? "Removed from wishlist" : "Saved to wishlist");
+                }}
+                className="rounded-xl border border-input p-3.5 hover:bg-muted text-foreground cursor-pointer"
+                aria-label="Wishlist"
+              >
                 <Heart className={`size-5 ${wishlist.includes(product.id) ? "fill-accent text-accent" : ""}`} />
               </button>
             </div>
 
-            <p className="mt-4 text-xs text-muted-foreground">
-              {product.stock > 10 ? "In stock \u2014 ships today" : `Only ${product.stock} left in the atelier`}
-            </p>
-
-            <div className="mt-8 grid gap-4 border-t border-border pt-6 text-xs text-muted-foreground sm:grid-cols-3">
-              <p className="flex items-center gap-2"><Truck className="size-4 text-accent" /> Free express $120+</p>
-              <p className="flex items-center gap-2"><Undo2 className="size-4 text-accent" /> 30-day returns</p>
-              <p className="flex items-center gap-2"><Shield className="size-4 text-accent" /> Authenticity sealed</p>
-            </div>
-
-            <div className="mt-10">
-              <div className="flex gap-6 border-b border-border">
-                {["details", "notes", "reviews"].map((t) => <button
-    key={t}
-    onClick={() => setTab(t)}
-    className={`pb-3 text-xs tracking-[0.16em] uppercase ${tab === t ? "border-b-2 border-accent text-foreground" : "text-muted-foreground"}`}
-  >
-                    {t}
-                  </button>)}
+            <div className="mt-8 grid grid-cols-3 gap-4 border-t border-border pt-6 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Truck className="size-4 text-accent shrink-0" />
+                <span>Complimentary Delivery</span>
               </div>
-              <div className="pt-5 text-sm text-muted-foreground">
-                {tab === "details" && <ul className="grid gap-2">
-                    <li>Size: {product.size}</li>
-                    <li>Family: {product.family}</li>
-                    <li>Vegan, cruelty free, alcohol denat. free formula</li>
-                    <li>Made in our Lahore & Grasse ateliers</li>
-                  </ul>}
-                {tab === "notes" && <ul className="grid gap-2">
-                    {product.notes.map((n) => <li key={n}>• {n}</li>)}
-                  </ul>}
-                {tab === "reviews" && <div className="grid gap-4">
-                    <p>"Exactly what I hoped for — refined, not loud." — Sara A.</p>
-                    <p>"Second bottle already. Worth every rupee." — Hina R.</p>
-                    <p>"Gorgeous packaging, arrived in 3 days." — Nora W.</p>
-                  </div>}
+              <div className="flex items-center gap-2">
+                <Shield className="size-4 text-accent shrink-0" />
+                <span>100% Authentic Quality</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Undo2 className="size-4 text-accent shrink-0" />
+                <span>30-Day Hassle Returns</span>
               </div>
             </div>
           </div>
         </div>
 
-        <section className="mt-24">
-          <h2 className="text-3xl">You may also love</h2>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            {related.map((p) => <ProductCard key={p.id} product={p} />)}
+        {/* Olfactory / Product details tab */}
+        <div className="mt-16 border-t border-border pt-10">
+          <div className="flex gap-8 border-b border-border text-sm">
+            {["details", "notes", "shipping"].map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`pb-3 font-medium uppercase tracking-[0.14em] transition-all cursor-pointer ${
+                  tab === t ? "border-b-2 border-accent text-accent font-semibold" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
           </div>
-        </section>
+
+          <div className="py-6 text-sm text-muted-foreground leading-relaxed">
+            {tab === "details" && (
+              <p>
+                Handcrafted with rare essences and organic botanicals. Formulated for longevity and delicate skin tolerance. Phthalate-free, vegan, and cruelty-free.
+              </p>
+            )}
+            {tab === "notes" && (
+              <div className="flex flex-wrap gap-2">
+                {product.notes?.map((n) => (
+                  <span key={n} className="rounded-full bg-secondary px-3 py-1 text-xs text-secondary-foreground font-medium">
+                    {n}
+                  </span>
+                ))}
+              </div>
+            )}
+            {tab === "shipping" && (
+              <p>
+                Dispatched directly from the verified artisan within 24-48 hours. Secure temperature-controlled packaging guaranteed.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Related items */}
+        {related.length > 0 && (
+          <div className="mt-16 border-t border-border pt-12">
+            <h2 className="text-2xl font-display">You may also admire</h2>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {related.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-    </SiteLayout>;
+    </SiteLayout>
+  );
 }
-var stdin_default = ProductPage;
-export {
-  stdin_default as default
-};
+
+export default ProductPage;

@@ -1,6 +1,6 @@
-import { useNavigate } from "@/shared/lib/router";
+import { useNavigate, Link } from "@/shared/lib/router";
 import { useState } from "react";
-import { Lock, ShieldCheck } from "lucide-react";
+import { Lock, ShieldCheck, Store, ArrowRight } from "lucide-react";
 
 import cd from "@/shared/assets/cd.png";
 
@@ -11,214 +11,101 @@ function AdminLogin() {
   const [password, setPassword] = useState("admin123");
   const [error, setError] = useState("");
 
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    if (email.trim().toLowerCase() === "admin@lumiere.com" && password === "admin123") {
+      localStorage.setItem("aura_admin", "1");
+      localStorage.setItem("la_role", "admin");
+      navigate({ to: "/admin" });
+    } else {
+      setError("Invalid staff credentials. If you are an Artisan Seller, please use the Seller Portal.");
+    }
+  };
+
   return (
     <div className="relative grid min-h-screen place-items-center overflow-hidden px-5">
-
-      {/* =====================================================
-          BACKGROUND IMAGE
-      ===================================================== */}
+      {/* Background */}
       <img
         src={cd}
         alt="Lumière Aura"
         className="absolute inset-0 h-full w-full object-cover"
       />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#35104F]/60 via-[#7B247F]/40 to-[#24102F]/70 backdrop-blur-xs" />
 
-      {/* =====================================================
-          TRANSPARENT OVERLAY
-         
-      ===================================================== */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#35104F]/20 via-[#7B247F]/10 to-[#C44991]/5" />
-
-      {/* Very soft overlay */}
-      <div className="absolute inset-0 bg-black/2" />
-
-
-      {/* =====================================================
-          LOGIN CARD
-      ===================================================== */}
+      {/* Login Card */}
       <form
-        onSubmit={(e) => {
-          e.preventDefault();
-
-          if (
-            email === "admin@lumiere.com" &&
-            password === "admin123"
-          ) {
-            localStorage.setItem("aura_admin", "1");
-            navigate({ to: "/admin" });
-          } else {
-            setError("Invalid staff credentials.");
-          }
-        }}
-        className="
-          relative z-10
-          w-full max-w-sm
-          rounded-lg
-          border border-white/25
-          bg-white/10
-          p-8
-          shadow-2xl
-          backdrop-blur-[3px]
-        "
+        onSubmit={handleLogin}
+        className="relative z-10 w-full max-w-md rounded-2xl border border-white/20 bg-white/15 p-8 shadow-2xl backdrop-blur-md text-white"
       >
-
-        {/* =====================================================
-            LOGO
-        ===================================================== */}
         <div className="flex items-center gap-3">
-
-          <span
-            className="
-              grid size-10 place-items-center
-              rounded-md
-              bg-[#7B247F]/70
-              text-white
-              shadow-md
-            "
-          >
-            <ShieldCheck className="size-5" />
+          <span className="grid size-11 place-items-center rounded-xl bg-[#7B247F] text-white shadow-md">
+            <ShieldCheck className="size-6" />
           </span>
-
           <div>
-            <p className="font-display text-lg tracking-[0.16em] text-white">
-              LUMIÈRE
-            </p>
-
-            <p className="eyebrow text-[#F6C76B]">
-              Control panel
-            </p>
+            <p className="font-display text-xl tracking-[0.16em] text-white">LUMIÈRE</p>
+            <p className="eyebrow text-[#F6C76B]">Platform Control Panel</p>
           </div>
-
         </div>
 
-
-        {/* =====================================================
-            TITLE
-        ===================================================== */}
-        <h1 className="mt-8 text-2xl text-white">
-          Staff sign in
-        </h1>
-
+        <h1 className="mt-6 text-2xl font-semibold">Staff & Admin Sign In</h1>
         <p className="mt-1 text-xs text-white/75">
-          Authorised personnel only.
+          Authorized atelier administrators and management only.
         </p>
 
-
-        {/* =====================================================
-            EMAIL
-        ===================================================== */}
-        <label className="mt-6 block text-xs text-white/85">
-
-          Work email
-
+        {/* Email */}
+        <label className="mt-5 block text-xs font-medium text-white/85">
+          Work Email
           <input
+            type="email"
+            required
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
               setError("");
             }}
-            className="
-              mt-2 w-full
-              rounded-md
-              border border-white/30
-              bg-white/10
-              px-3 py-2.5
-              text-sm text-white
-              outline-none
-              placeholder:text-white/50
-              focus:border-white/60
-              focus:bg-white/15
-            "
+            className="mt-2 w-full rounded-xl border border-white/30 bg-white/10 px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/70"
           />
-
         </label>
 
-
-        {/* =====================================================
-            PASSWORD
-        ===================================================== */}
-        <label className="mt-4 block text-xs text-white/85">
-
+        {/* Password */}
+        <label className="mt-4 block text-xs font-medium text-white/85">
           Password
-
           <input
             type="password"
+            required
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
               setError("");
             }}
-            className="
-              mt-2 w-full
-              rounded-md
-              border border-white/30
-              bg-white/10
-              px-3 py-2.5
-              text-sm text-white
-              outline-none
-              placeholder:text-white/50
-              focus:border-white/60
-              focus:bg-white/15
-            "
+            className="mt-2 w-full rounded-xl border border-white/30 bg-white/10 px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/70"
           />
-
         </label>
 
-
-        {/* =====================================================
-            ERROR MESSAGE
-        ===================================================== */}
         {error && (
-          <p className="mt-3 text-xs text-red-200">
+          <p className="mt-3 text-xs font-medium text-red-300 bg-red-950/40 p-2.5 rounded-lg border border-red-500/30">
             {error}
           </p>
         )}
 
-
-        {/* =====================================================
-            SIGN IN BUTTON
-        ===================================================== */}
         <button
           type="submit"
-          className="
-            mt-6
-            flex w-full
-            items-center justify-center
-            gap-2
-            rounded-md
-            bg-[#7B247F]/75
-            py-3.5
-            text-[0.72rem]
-            tracking-[0.2em]
-            text-white
-            uppercase
-            transition-all
-            hover:bg-[#C44991]/80
-          "
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-royal py-3.5 text-xs font-semibold tracking-[0.18em] uppercase text-primary-foreground shadow-glow hover:opacity-90 transition-opacity cursor-pointer"
         >
-          <Lock className="size-3.5" />
-          Sign in
+          <Lock className="size-3.5" /> Enter Admin Panel
         </button>
 
-
-        {/* =====================================================
-            DEMO ACCESS
-        ===================================================== */}
-        <p
-          className="
-            mt-5
-            rounded-md
-            border border-white/20
-            bg-white/10
-            p-3
-            text-center
-            text-[0.7rem]
-            text-white/75
-          "
-        >
-          Demo access — admin@lumiere.com / admin123
-        </p>
-
+        {/* Dedicated Switcher to Seller Portal */}
+        <div className="mt-6 pt-5 border-t border-white/15 text-center">
+          <p className="text-xs text-white/70">Are you an artisan selling your creations?</p>
+          <Link
+            to="/seller-login"
+            className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/25 px-4 py-2.5 text-xs font-semibold text-[#F6C76B] transition-colors w-full"
+          >
+            <Store className="size-3.5" /> Go to Artisan Seller Portal <ArrowRight className="size-3.5" />
+          </Link>
+        </div>
       </form>
     </div>
   );
