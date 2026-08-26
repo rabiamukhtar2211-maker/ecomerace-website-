@@ -1,4 +1,5 @@
 import { Link, Outlet, useNavigate, useRouterState } from "@/shared/lib/router";
+import { Navigate, useLocation } from "react-router-dom";
 import {
   BarChart3,
   Boxes,
@@ -32,23 +33,19 @@ const links = [
 
 function AdminShell() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const pathname = useRouterState({
     select: (s) => s.location.pathname,
   });
 
-  const [ready, setReady] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [pendingSellersCount, setPendingSellersCount] = useState(0);
 
-  useEffect(() => {
-    const isAdmin = localStorage.getItem("aura_admin") === "1";
+  const isAdmin = typeof window !== "undefined" && localStorage.getItem("aura_admin") === "1";
 
-    if (!isAdmin) {
-      navigate({ to: "/admin-login" });
-    } else {
-      setReady(true);
-      // Fetch pending sellers badge
+  useEffect(() => {
+    if (isAdmin) {
       api.getDashboardStats()
         .then((res) => {
           if (res.kpis && res.kpis.pendingSellers) {
@@ -57,14 +54,18 @@ function AdminShell() {
         })
         .catch(() => {});
     }
-  }, [navigate, pathname]);
+  }, [isAdmin, pathname]);
 
-  if (!ready) {
-    return <div className="min-h-screen bg-[#FBF3FA]" />;
+  // Strict Instant Protection: Block anyone without active admin login
+  if (!isAdmin) {
+    return <Navigate to="/admin-login" replace />;
   }
 
   const handleLogout = () => {
     localStorage.removeItem("aura_admin");
+    localStorage.removeItem("la_role");
+    localStorage.removeItem("la_token");
+    localStorage.removeItem("la_user");
     navigate({ to: "/admin-login" });
   };
 

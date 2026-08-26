@@ -143,6 +143,13 @@ export async function initDatabase() {
     // Staff Admin
     await query(`
       INSERT INTO users (name, email, password, role, approval_status, subscription_status, store_name)
+      VALUES ('Rabia Mukhtar (Admin)', 'rabia5848@gmail.com', $1, 'admin', 'approved', 'active', 'Lumière Headquarters')
+      ON CONFLICT (email) DO UPDATE SET role = 'admin', password = $1;
+    `, [rabiaHash]);
+
+    // Secondary Admin Manager
+    await query(`
+      INSERT INTO users (name, email, password, role, approval_status, subscription_status, store_name)
       VALUES ('Admin Manager', 'admin@lumiere.com', $1, 'admin', 'approved', 'active', 'Lumière Headquarters')
       ON CONFLICT (email) DO NOTHING;
     `, [defaultHash]);

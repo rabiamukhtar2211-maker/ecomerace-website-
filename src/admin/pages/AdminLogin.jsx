@@ -7,19 +7,30 @@ import cd from "@/shared/assets/cd.png";
 function AdminLogin() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("admin@lumiere.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = (e) => {
     e.preventDefault();
 
-    if (email.trim().toLowerCase() === "admin@lumiere.com" && password === "admin123") {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPass = password.trim();
+
+    const validAdmins = [
+      "rabia5848@gmail.com",
+      "rabiamukhtar5848@gmail.com",
+      "admin@lumiere.com"
+    ];
+
+    const validPasswords = ["rabia1122", "admin123", "password123"];
+
+    if (validAdmins.includes(cleanEmail) && validPasswords.includes(cleanPass)) {
       localStorage.setItem("aura_admin", "1");
       localStorage.setItem("la_role", "admin");
       navigate({ to: "/admin" });
     } else {
-      setError("Invalid staff credentials. If you are an Artisan Seller, please use the Seller Portal.");
+      setError("Invalid admin credentials. Please verify your email and password.");
     }
   };
 
@@ -55,7 +66,7 @@ function AdminLogin() {
 
         {/* Email */}
         <label className="mt-5 block text-xs font-medium text-white/85">
-          Work Email
+          Admin Email
           <input
             type="email"
             required
@@ -64,6 +75,7 @@ function AdminLogin() {
               setEmail(e.target.value);
               setError("");
             }}
+            placeholder="rabia5848@gmail.com"
             className="mt-2 w-full rounded-xl border border-white/30 bg-white/10 px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/70"
           />
         </label>
@@ -79,6 +91,7 @@ function AdminLogin() {
               setPassword(e.target.value);
               setError("");
             }}
+            placeholder="••••••••"
             className="mt-2 w-full rounded-xl border border-white/30 bg-white/10 px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/70"
           />
         </label>
