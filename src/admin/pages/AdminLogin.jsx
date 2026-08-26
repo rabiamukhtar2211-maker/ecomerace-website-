@@ -47,6 +47,7 @@ function AdminLogin() {
       {/* Login Card */}
       <form
         onSubmit={handleLogin}
+        autoComplete="off"
         className="relative z-10 w-full max-w-md rounded-2xl border border-white/20 bg-white/15 p-8 shadow-2xl backdrop-blur-md text-white"
       >
         <div className="flex items-center gap-3">
@@ -70,13 +71,14 @@ function AdminLogin() {
           <input
             type="email"
             required
+            autoComplete="off"
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
               setError("");
             }}
-            placeholder="rabia5848@gmail.com"
-            className="mt-2 w-full rounded-xl border border-white/30 bg-white/10 px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/70"
+            placeholder=""
+            className="mt-2 w-full rounded-xl border border-white/30 bg-white/10 px-3.5 py-2.5 text-sm text-white outline-none focus:border-white/70"
           />
         </label>
 
@@ -86,13 +88,14 @@ function AdminLogin() {
           <input
             type="password"
             required
+            autoComplete="new-password"
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
               setError("");
             }}
-            placeholder="••••••••"
-            className="mt-2 w-full rounded-xl border border-white/30 bg-white/10 px-3.5 py-2.5 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/70"
+            placeholder=""
+            className="mt-2 w-full rounded-xl border border-white/30 bg-white/10 px-3.5 py-2.5 text-sm text-white outline-none focus:border-white/70"
           />
         </label>
 
