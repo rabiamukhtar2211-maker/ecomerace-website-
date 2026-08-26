@@ -10,27 +10,22 @@ import api from "@/shared/services/api";
 
 function ProductPage() {
   const { id } = useParams();
-  const [product, setProduct] = useState(() => getLocalProduct(id));
-  const [loading, setLoading] = useState(!product);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeImage, setActiveImage] = useState(null);
   const { add, wishlist, toggleWish } = useCart();
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState("details");
 
   useEffect(() => {
     async function loadProduct() {
-      const local = getLocalProduct(id);
-      if (local) {
-        setProduct(local);
-        setLoading(false);
-        return;
-      }
-
       try {
         setLoading(true);
+        // 1. Fetch live product from PostgreSQL database
         const res = await api.getProductById(id);
         if (res.product) {
           const p = res.product;
-          setProduct({
+          const mappedProduct = {
             id: p.slug || String(p.id),
             dbId: p.id,
             name: p.name,
@@ -49,14 +44,25 @@ function ProductPage() {
             store_name: p.store_name || "Lumière Atelier",
             seller_name: p.seller_name,
             notes: Array.isArray(p.notes) ? p.notes : ["Signature Accord", "Luxury Essence"],
-          });
+          };
+          setProduct(mappedProduct);
+          setActiveImage(mappedProduct.image);
+          setLoading(false);
+          return;
         }
       } catch (err) {
-        console.warn("Could not fetch product:", err.message);
-      } finally {
-        setLoading(false);
+        console.warn("Falling back to local product record:", err.message);
       }
+
+      // 2. Fallback to local products only if DB query fails or offline
+      const local = getLocalProduct(id);
+      if (local) {
+        setProduct(local);
+        setActiveImage(local.image);
+      }
+      setLoading(false);
     }
+
     loadProduct();
   }, [id]);
 
@@ -85,6 +91,7 @@ function ProductPage() {
     );
   }
 
+  const mainDisplayImage = activeImage || product.image || "/p-perfume-1.jpg";
   const related = localProducts.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   return (
@@ -95,29 +102,38 @@ function ProductPage() {
         </nav>
 
         <div className="mt-8 grid gap-12 lg:grid-cols-2">
+          {/* Product Gallery */}
           <div className="grid gap-4">
-            <img
-              src={product.image || "/p-perfume-1.jpg"}
-              alt={product.name}
-              width={900}
-              height={1100}
-              onError={(e) => {
-                e.target.src = "/p-perfume-1.jpg";
-              }}
-              className="w-full rounded-2xl object-cover shadow-soft aspect-4/5 bg-muted"
-            />
-            <div className="grid grid-cols-3 gap-4">
-              {[product.image, product.image, product.image].map((src, i) => (
-                <img
+            <div className="relative aspect-4/5 overflow-hidden rounded-2xl bg-muted shadow-soft border border-border">
+              <img
+                src={mainDisplayImage}
+                alt={product.name}
+                onError={(e) => {
+                  e.target.src = "/p-perfume-1.jpg";
+                }}
+                className="size-full object-cover transition-all duration-500"
+              />
+            </div>
+
+            {/* Thumbnail Preview Selector */}
+            <div className="grid grid-cols-3 gap-3">
+              {[mainDisplayImage, mainDisplayImage, mainDisplayImage].map((src, i) => (
+                <button
                   key={i}
-                  src={src || "/p-perfume-1.jpg"}
-                  alt={`${product.name} view ${i + 1}`}
-                  loading="lazy"
-                  onError={(e) => {
-                    e.target.src = "/p-perfume-1.jpg";
-                  }}
-                  className="aspect-square w-full rounded-xl object-cover opacity-80 border border-border"
-                />
+                  type="button"
+                  onClick={() => setActiveImage(src)}
+                  className="aspect-square w-full rounded-xl overflow-hidden border border-border/80 bg-muted cursor-pointer hover:border-accent transition-colors"
+                >
+                  <img
+                    src={src}
+                    alt={`${product.name} preview ${i + 1}`}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.src = "/p-perfume-1.jpg";
+                    }}
+                    className="size-full object-cover opacity-90 hover:opacity-100 transition-opacity"
+                  />
+                </button>
               ))}
             </div>
           </div>
@@ -133,7 +149,7 @@ function ProductPage() {
             <h1 className="mt-3 font-display text-4xl md:text-5xl">{product.name}</h1>
             <p className="mt-2 text-muted-foreground">{product.tagline}</p>
 
-            {/* Seller / Store Identity Card (Daraz / Amazon Style) */}
+            {/* Seller / Store Identity Card */}
             <div className="mt-4 flex items-center justify-between rounded-xl border border-border/80 bg-muted/40 p-3 text-xs">
               <div className="flex items-center gap-2.5">
                 <div className="grid size-8 place-items-center rounded-lg bg-royal text-primary-foreground font-semibold">
@@ -142,7 +158,7 @@ function ProductPage() {
                 <div>
                   <p className="text-[0.65rem] uppercase tracking-wider text-muted-foreground">Sold & Dispatched by</p>
                   <p className="font-semibold text-foreground text-sm leading-tight">
-                    {product.store_name || "Lumière Aura Official"}
+                    {product.store_name || "Lumière Official Atelier"}
                   </p>
                 </div>
               </div>
