@@ -10,6 +10,7 @@ import messageRoutes from "./routes/messageRoutes.js";
 import sellerRoutes from "./routes/sellerRoutes.js";
 import { getDashboardStats } from "./controllers/statsController.js";
 import { initDatabase } from "./config/initDb.js";
+import { query } from "./config/db.js";
 
 dotenv.config();
 
@@ -32,11 +33,26 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/stats", getDashboardStats);
 
-// Healthcheck
-app.get("/", (req, res) => {
+// Healthcheck & DB Diagnostics
+app.get("/", async (req, res) => {
+  let dbStatus = "unknown";
+  let dbError = null;
+  let hasDbUrl = !!process.env.DATABASE_URL;
+
+  try {
+    const testRes = await query("SELECT COUNT(*) FROM products");
+    dbStatus = `connected (products count: ${testRes.rows[0].count})`;
+  } catch (e) {
+    dbStatus = "failed";
+    dbError = e.message;
+  }
+
   res.json({
     status: "online",
     message: "Lumière Aura Atelier API is running!",
+    hasDatabaseUrl: hasDbUrl,
+    databaseStatus: dbStatus,
+    databaseError: dbError,
     timestamp: new Date().toISOString()
   });
 });
