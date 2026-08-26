@@ -42,7 +42,8 @@ function AdminLogin() {
         alt="Lumière Aura"
         className="absolute inset-0 h-full w-full object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-[#35104F]/60 via-[#7B247F]/40 to-[#24102F]/70 backdrop-blur-xs" />
+      {/* Transparent Overlay matching Journal and About */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#35104F]/10 via-[#7B247F]/65 to-[#C44991]/80" />
 
       {/* Login Card */}
       <form

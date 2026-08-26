@@ -134,7 +134,8 @@ function ShopGrid({
           alt={title}
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#35104F]/75 via-[#7B247F]/50 to-[#24102F]/80 backdrop-blur-xs" />
+        {/* Transparent Overlay matching Journal and About */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#35104F]/10 via-[#7B247F]/65 to-[#C44991]/80" />
 
         {/* Hero Content */}
         <div className="relative z-10 flex min-h-[260px] sm:min-h-[330px] flex-col items-center justify-center px-5 py-12 sm:py-16">
