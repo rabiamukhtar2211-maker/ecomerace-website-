@@ -1,5 +1,5 @@
 import { Link } from "@/shared/lib/router";
-import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import { Heart, Menu, Search, ShoppingBag, User, X, Sparkles, LogIn } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/shared/lib/cart";
 import { useAuth } from "@/shared/lib/auth";
@@ -7,12 +7,12 @@ import AuthModal from "./AuthModal";
 
 const nav = [
   { to: "/", label: "Home" },
-  { to: "/shop", label: "Shop" },
+  { to: "/shop", label: "Shop All" },
   { to: "/perfumes", label: "Perfumes" },
   { to: "/skincare", label: "Skincare" },
-  { to: "/gifts", label: "Gifts" },
+  { to: "/gifts", label: "Gifts & Sets" },
   { to: "/journal", label: "Journal" },
-  { to: "/about", label: "About" },
+  { to: "/about", label: "Our Story" },
   { to: "/contact", label: "Contact" }
 ];
 
@@ -24,49 +24,55 @@ function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-xl">
-        <div className="bg-royal py-2 text-center text-[0.68rem] tracking-[0.22em] text-primary-foreground uppercase flex items-center justify-center gap-4 px-4">
-          <span>Complimentary shipping over $120 · 3 luxury samples with every order</span>
+      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/90 backdrop-blur-xl">
+        {/* Announcement Bar */}
+        <div className="bg-royal py-1.5 sm:py-2 text-center text-[0.62rem] sm:text-[0.68rem] tracking-[0.16em] sm:tracking-[0.22em] text-primary-foreground uppercase flex items-center justify-center gap-2 sm:gap-4 px-2 sm:px-4 overflow-hidden">
+          <span className="truncate">Complimentary shipping over $120 · 3 luxury samples with every order</span>
         </div>
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-5">
+
+        {/* Main Navbar */}
+        <div className="mx-auto flex h-16 sm:h-20 max-w-7xl items-center justify-between gap-3 px-4 sm:px-5">
+          {/* Hamburger Mobile */}
           <button
-            className="lg:hidden text-foreground cursor-pointer"
+            className="lg:hidden p-1.5 text-foreground hover:text-accent transition-colors cursor-pointer"
             onClick={() => setOpen((v) => !v)}
             aria-label="Toggle menu"
           >
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
 
-          <Link to="/" className="flex flex-col leading-none">
-            <span className="font-display text-2xl tracking-[0.2em] text-foreground">LUMIÈRE</span>
-            <span className="eyebrow text-accent">Aura Atelier</span>
+          {/* Brand Logo */}
+          <Link to="/" className="flex flex-col leading-none text-center lg:text-left">
+            <span className="font-display text-xl sm:text-2xl tracking-[0.2em] text-foreground">LUMIÈRE</span>
+            <span className="eyebrow text-[0.55rem] sm:text-[0.65rem] text-accent tracking-[0.2em]">Aura Atelier</span>
           </Link>
 
+          {/* Desktop Nav Items */}
           <nav className="hidden items-center gap-6 lg:flex">
             {nav.map((n) => (
               <Link
                 key={n.to}
                 to={n.to}
-                activeProps={{ className: "text-accent font-semibold" }}
-                className="text-[0.78rem] tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-accent"
+                className="text-[0.78rem] tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-accent font-medium"
               >
                 {n.label}
               </Link>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3 sm:gap-4">
-            <Link to="/shop" aria-label="Search" className="text-muted-foreground hover:text-accent">
-              <Search className="size-5" />
+          {/* Icons Toolbar */}
+          <div className="flex items-center gap-2.5 sm:gap-4">
+            <Link to="/shop" aria-label="Search" className="p-1 text-muted-foreground hover:text-accent transition-colors">
+              <Search className="size-4.5 sm:size-5" />
             </Link>
 
             {/* Customer Account Button */}
             <button
               onClick={() => setAuthOpen(true)}
               aria-label="Account"
-              className="flex items-center gap-1.5 text-muted-foreground hover:text-accent transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 p-1 text-muted-foreground hover:text-accent transition-colors cursor-pointer"
             >
-              <User className="size-5" />
+              <User className="size-4.5 sm:size-5" />
               {isAuthenticated && (
                 <span className="hidden sm:inline-block text-xs font-semibold uppercase tracking-wider text-accent">
                   {user?.name?.split(" ")[0]}
@@ -74,19 +80,19 @@ function Navbar() {
               )}
             </button>
 
-            <Link to="/wishlist" aria-label="Wishlist" className="relative text-muted-foreground hover:text-accent">
-              <Heart className="size-5" />
+            <Link to="/wishlist" aria-label="Wishlist" className="relative p-1 text-muted-foreground hover:text-accent transition-colors">
+              <Heart className="size-4.5 sm:size-5" />
               {wishlist.length > 0 && (
-                <span className="absolute -top-2 -right-2 grid size-4 place-items-center rounded-full bg-accent text-[0.6rem] text-accent-foreground font-semibold">
+                <span className="absolute -top-1 -right-1 grid size-4 place-items-center rounded-full bg-accent text-[0.58rem] text-accent-foreground font-bold shadow-xs">
                   {wishlist.length}
                 </span>
               )}
             </Link>
 
-            <Link to="/cart" aria-label="Cart" className="relative text-foreground hover:text-accent">
-              <ShoppingBag className="size-5" />
+            <Link to="/cart" aria-label="Cart" className="relative p-1 text-foreground hover:text-accent transition-colors">
+              <ShoppingBag className="size-4.5 sm:size-5" />
               {count > 0 && (
-                <span className="absolute -top-2 -right-2 grid size-4 place-items-center rounded-full bg-accent text-[0.6rem] text-accent-foreground font-semibold">
+                <span className="absolute -top-1 -right-1 grid size-4 place-items-center rounded-full bg-accent text-[0.58rem] text-accent-foreground font-bold shadow-xs">
                   {count}
                 </span>
               )}
@@ -94,19 +100,51 @@ function Navbar() {
           </div>
         </div>
 
+        {/* Mobile Navigation Drawer */}
         {open && (
-          <nav className="grid gap-1 border-t border-border bg-card px-5 py-4 lg:hidden">
-            {nav.map((n) => (
+          <div className="border-t border-border bg-card/98 px-5 py-5 lg:hidden shadow-lg animate-in slide-in-from-top-2 duration-200">
+            <div className="mb-4">
               <Link
-                key={n.to}
-                to={n.to}
+                to="/shop"
                 onClick={() => setOpen(false)}
-                className="py-2 text-sm tracking-[0.12em] text-muted-foreground uppercase"
+                className="flex items-center justify-between rounded-xl bg-muted px-4 py-2.5 text-xs text-muted-foreground"
               >
-                {n.label}
+                <span>Search perfumes, skincare, gifts…</span>
+                <Search className="size-4 text-accent" />
               </Link>
-            ))}
-          </nav>
+            </div>
+
+            <nav className="grid gap-1">
+              {nav.map((n) => (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-between rounded-lg px-3 py-2.5 text-xs font-semibold tracking-[0.14em] text-foreground uppercase hover:bg-muted transition-colors"
+                >
+                  <span>{n.label}</span>
+                </Link>
+              ))}
+            </nav>
+
+            <div className="mt-5 border-t border-border/80 pt-4 flex items-center justify-between">
+              {isAuthenticated ? (
+                <div className="flex items-center gap-2 text-xs font-semibold text-accent">
+                  <Sparkles className="size-4" /> Signed in as {user?.name}
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    setAuthOpen(true);
+                  }}
+                  className="flex items-center gap-2 text-xs font-semibold text-accent uppercase tracking-wider cursor-pointer"
+                >
+                  <LogIn className="size-4" /> Sign In / Create Account
+                </button>
+              )}
+            </div>
+          </div>
         )}
       </header>
 

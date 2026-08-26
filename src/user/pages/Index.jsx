@@ -68,26 +68,26 @@ function Home() {
           className="absolute inset-0 size-full object-cover"
         />
         <div className="absolute inset-0 bg-veil" />
-        <div className="relative mx-auto flex min-h-[78vh] max-w-7xl flex-col justify-center px-5 py-24 text-primary-foreground">
-          <p className="eyebrow text-gold">Atelier since 2014</p>
-          <h1 className="mt-5 max-w-2xl text-5xl leading-[1.05] md:text-7xl">
+        <div className="relative mx-auto flex min-h-[72vh] sm:min-h-[78vh] max-w-7xl flex-col justify-center px-5 py-16 sm:py-24 text-primary-foreground">
+          <p className="eyebrow text-gold text-xs sm:text-sm">Atelier since 2014</p>
+          <h1 className="mt-3 sm:mt-5 max-w-2xl text-4xl sm:text-6xl md:text-7xl leading-[1.08] font-display">
             Wear the night.<br />
             <span className="text-gradient">Glow by morning.</span>
           </h1>
-          <p className="mt-6 max-w-lg text-sm opacity-90 md:text-base">
+          <p className="mt-4 sm:mt-6 max-w-lg text-xs sm:text-sm md:text-base leading-relaxed opacity-90">
             Two houses under one roof: concentrated parfums matured for six weeks, and clinically dosed
             skincare built for a calm, luminous barrier.
           </p>
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div className="mt-8 sm:mt-10 flex flex-wrap gap-3 sm:gap-4">
             <Link
               to="/perfumes"
-              className="inline-flex items-center gap-2 rounded-md bg-rose-grad px-7 py-4 text-[0.72rem] tracking-[0.2em] text-primary-foreground uppercase shadow-glow"
+              className="inline-flex items-center gap-2 rounded-xl bg-rose-grad px-6 sm:px-7 py-3.5 sm:py-4 text-[0.68rem] sm:text-[0.72rem] tracking-[0.2em] text-primary-foreground uppercase shadow-glow font-semibold"
             >
               Shop parfums <ArrowRight className="size-4" />
             </Link>
             <Link
               to="/skincare"
-              className="rounded-md border border-primary-foreground/40 px-7 py-4 text-[0.72rem] tracking-[0.2em] uppercase backdrop-blur-sm"
+              className="rounded-xl border border-primary-foreground/40 px-6 sm:px-7 py-3.5 sm:py-4 text-[0.68rem] sm:text-[0.72rem] tracking-[0.2em] uppercase backdrop-blur-sm font-semibold hover:bg-white/10 transition-colors"
             >
               Skin rituals
             </Link>
@@ -97,18 +97,18 @@ function Home() {
 
       {/* Trust bar */}
       <section className="border-b border-border bg-card">
-        <div className="mx-auto grid max-w-7xl gap-6 px-5 py-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 sm:gap-6 px-4 sm:px-5 py-6 sm:py-8 lg:grid-cols-4">
           {[
             { icon: Truck, t: "Free express over $120", s: "Worldwide, 2–4 days" },
             { icon: Sparkles, t: "3 samples per order", s: "Choose at checkout" },
             { icon: Leaf, t: "Clean & cruelty free", s: "Vegan formulations" },
             { icon: Award, t: "Awarded 2025", s: "Best niche fragrance" }
           ].map((f) => (
-            <div key={f.t} className="flex items-start gap-3">
-              <f.icon className="mt-0.5 size-5 text-accent" />
+            <div key={f.t} className="flex items-start gap-2.5 sm:gap-3">
+              <f.icon className="mt-0.5 size-4 sm:size-5 text-accent shrink-0" />
               <div>
-                <p className="text-sm font-semibold">{f.t}</p>
-                <p className="text-xs text-muted-foreground">{f.s}</p>
+                <p className="text-xs sm:text-sm font-semibold">{f.t}</p>
+                <p className="text-[0.68rem] sm:text-xs text-muted-foreground">{f.s}</p>
               </div>
             </div>
           ))}
@@ -116,22 +116,22 @@ function Home() {
       </section>
 
       {/* Categories */}
-      <section className="mx-auto max-w-7xl px-5 py-20">
+      <section className="mx-auto max-w-7xl px-4 sm:px-5 py-12 sm:py-20">
         <div className="text-center">
-          <p className="eyebrow text-accent">Explore</p>
-          <h2 className="mt-3 text-4xl">Three ways to begin</h2>
+          <p className="eyebrow text-accent text-xs">Explore</p>
+          <h2 className="mt-2 text-3xl sm:text-4xl font-display">Three ways to begin</h2>
         </div>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-8 sm:mt-12 grid gap-4 sm:gap-6 md:grid-cols-3">
           {[
             { to: "/perfumes", label: "Parfums", img: hero, copy: "12 signatures, from oud to lilac" },
             { to: "/skincare", label: "Skincare", img: skinHero, copy: "Serums, creams, SPF & masks" },
             { to: "/gifts", label: "Gift sets", img: skinHero, copy: "Coffrets wrapped in silk" }
           ].map((c) => (
-            <Link key={c.to} to={c.to} className="group relative isolate block overflow-hidden rounded-lg shadow-soft">
-              <img src={c.img} alt={c.label} loading="lazy" className="h-80 w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <Link key={c.to} to={c.to} className="group relative isolate block overflow-hidden rounded-2xl shadow-soft aspect-[4/3] sm:aspect-auto sm:h-80">
+              <img src={c.img} alt={c.label} loading="lazy" className="size-full object-cover transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-veil" />
-              <div className="absolute bottom-6 left-6 text-primary-foreground">
-                <h3 className="text-2xl">{c.label}</h3>
+              <div className="absolute bottom-5 left-5 text-primary-foreground">
+                <h3 className="text-xl sm:text-2xl font-display">{c.label}</h3>
                 <p className="mt-1 text-xs opacity-85">{c.copy}</p>
               </div>
             </Link>
@@ -140,17 +140,18 @@ function Home() {
       </section>
 
       {/* Bestsellers */}
-      <section className="mx-auto max-w-7xl px-5 pb-20">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+      <section className="mx-auto max-w-7xl px-4 sm:px-5 pb-14 sm:pb-20">
+        <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="eyebrow text-accent">Loved most</p>
-            <h2 className="mt-2 text-4xl">Bestsellers</h2>
+            <p className="eyebrow text-accent text-xs">Loved most</p>
+            <h2 className="mt-1 text-2xl sm:text-4xl font-display">Bestsellers</h2>
           </div>
-          <Link to="/shop" className="text-xs tracking-[0.18em] text-accent uppercase">
+          <Link to="/shop" className="text-xs font-semibold tracking-[0.14em] text-accent uppercase hover:underline">
             View all →
           </Link>
         </div>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        {/* 2-Column Mobile Grid & 4-Column Desktop Grid */}
+        <div className="mt-6 sm:mt-10 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
           {displayBestsellers.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
@@ -158,27 +159,27 @@ function Home() {
       </section>
 
       {/* Editorial split */}
-      <section className="bg-secondary/60 py-20">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 md:grid-cols-2">
-          <img src={skinHero} alt="Lumière Aura skincare ritual" loading="lazy" className="rounded-lg shadow-soft" />
+      <section className="bg-secondary/60 py-12 sm:py-20">
+        <div className="mx-auto grid max-w-7xl items-center gap-8 sm:gap-12 px-4 sm:px-5 md:grid-cols-2">
+          <img src={skinHero} alt="Lumière Aura skincare ritual" loading="lazy" className="rounded-2xl shadow-soft w-full" />
           <div>
-            <p className="eyebrow text-accent">The ritual</p>
-            <h2 className="mt-3 text-4xl">Skin first, scent second</h2>
-            <p className="mt-5 text-sm text-muted-foreground">
+            <p className="eyebrow text-accent text-xs">The ritual</p>
+            <h2 className="mt-2 text-2xl sm:text-4xl font-display">Skin first, scent second</h2>
+            <p className="mt-3 sm:mt-5 text-xs sm:text-sm text-muted-foreground leading-relaxed">
               Fragrance sits differently on a hydrated barrier. Our dermatologists built a four-step ritual
               that prepares skin so your parfum blooms softer and lasts longer.
             </p>
-            <ul className="mt-6 grid gap-3 text-sm">
+            <ul className="mt-5 sm:mt-6 grid gap-2.5 sm:gap-3 text-xs sm:text-sm">
               {["Cleanse with Velvet Cream", "Layer Hydra Glow Serum", "Seal with Radiance Cream", "Mist, then apply parfum"].map((s, i) => (
                 <li key={s} className="flex items-center gap-3">
-                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-royal text-xs text-primary-foreground">
+                  <span className="grid size-6 sm:size-7 shrink-0 place-items-center rounded-full bg-royal text-[0.65rem] sm:text-xs text-primary-foreground font-bold">
                     {i + 1}
                   </span>
                   {s}
                 </li>
               ))}
             </ul>
-            <Link to="/journal" className="mt-8 inline-block rounded-md bg-royal px-6 py-3 text-[0.7rem] tracking-[0.2em] text-primary-foreground uppercase">
+            <Link to="/journal" className="mt-6 sm:mt-8 inline-block rounded-xl bg-royal px-6 py-3 text-[0.68rem] sm:text-[0.7rem] tracking-[0.2em] text-primary-foreground uppercase font-semibold shadow-glow">
               Read the guide
             </Link>
           </div>
@@ -186,12 +187,13 @@ function Home() {
       </section>
 
       {/* New in */}
-      <section className="mx-auto max-w-7xl px-5 py-20">
+      <section className="mx-auto max-w-7xl px-4 sm:px-5 py-12 sm:py-20">
         <div className="text-center">
-          <p className="eyebrow text-accent">Fresh from the atelier</p>
-          <h2 className="mt-3 text-4xl">New & limited</h2>
+          <p className="eyebrow text-accent text-xs">Fresh from the atelier</p>
+          <h2 className="mt-1 text-2xl sm:text-4xl font-display">New & limited</h2>
         </div>
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        {/* 2-Column Mobile Grid & 4-Column Desktop Grid */}
+        <div className="mt-6 sm:mt-10 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
           {displayNewIn.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
@@ -199,22 +201,22 @@ function Home() {
       </section>
 
       {/* Reviews */}
-      <section className="bg-royal py-20 text-primary-foreground">
-        <div className="mx-auto max-w-7xl px-5">
+      <section className="bg-royal py-14 sm:py-20 text-primary-foreground">
+        <div className="mx-auto max-w-7xl px-4 sm:px-5">
           <div className="text-center">
-            <p className="eyebrow text-gold">4.8 average · 6,200 reviews</p>
-            <h2 className="mt-3 text-4xl">Words from our clients</h2>
+            <p className="eyebrow text-gold text-xs">4.8 average · 6,200 reviews</p>
+            <h2 className="mt-2 text-2xl sm:text-4xl font-display">Words from our clients</h2>
           </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <div className="mt-8 sm:mt-12 grid gap-4 sm:gap-6 md:grid-cols-3">
             {reviews.map((r) => (
-              <figure key={r.name} className="rounded-lg bg-primary-foreground/8 p-7 backdrop-blur-sm">
+              <figure key={r.name} className="rounded-2xl bg-primary-foreground/8 p-5 sm:p-7 backdrop-blur-sm border border-white/10">
                 <div className="flex gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="size-4 fill-gold text-gold" />
+                    <Star key={i} className="size-3.5 sm:size-4 fill-gold text-gold" />
                   ))}
                 </div>
-                <blockquote className="mt-4 text-sm opacity-90">"{r.text}"</blockquote>
-                <figcaption className="mt-5 text-xs opacity-70">
+                <blockquote className="mt-3 text-xs sm:text-sm opacity-90 leading-relaxed">"{r.text}"</blockquote>
+                <figcaption className="mt-4 text-[0.7rem] sm:text-xs opacity-70">
                   {r.name} · {r.role}
                 </figcaption>
               </figure>
